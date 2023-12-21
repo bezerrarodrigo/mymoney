@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { Header } from "../../components/Header/Header.tsx";
 import { Summary } from "../../components/Summary/Summary.tsx";
+import { useTransactions } from "../../hooks/useTransactions.ts";
 import { SearchForm } from "./components/SearchForm/SearchForm.tsx";
 import {
   PriceHighLight,
@@ -8,26 +8,8 @@ import {
   TransactionsTable,
 } from "./style.ts";
 
-interface TransactionsProps {
-  id: number;
-  description: string;
-  type: "income" | "outcome";
-  category: string;
-  price: number;
-  createdAt: string;
-}
-
 export const Transactions = () => {
-  const [transactions, setTransactions] = useState<TransactionsProps[]>([]);
-
-  useEffect(() => {
-    async function loadTransactions() {
-      const response = await fetch("http://localhost:3000/transactions");
-      const data = await response.json();
-      setTransactions(data);
-    }
-    loadTransactions();
-  }, []);
+  const { transactions } = useTransactions();
 
   return (
     <>
