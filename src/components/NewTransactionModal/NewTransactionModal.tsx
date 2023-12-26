@@ -1,6 +1,7 @@
 import { ArrowCircleUp, X } from "@phosphor-icons/react";
 import { ArrowCircleDown } from "@phosphor-icons/react/dist/ssr";
 import * as Dialog from "@radix-ui/react-dialog";
+import { useForm } from "react-hook-form";
 import {
   Content,
   ModalCloseButton,
@@ -8,8 +9,34 @@ import {
   TransactionButton,
   TransactionType,
 } from "./styles";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const newTransactionFormSchema = z.object({
+  description: z.string(),
+  price: z.number(),
+  category: z.string(),
+  // type: z.enum(["income", "outcome"]),
+});
+
+type NewTransactionFormInputs = z.infer<typeof newTransactionFormSchema>;
 
 export const NewTransactionModal = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<NewTransactionFormInputs>({
+    resolver: zodResolver(newTransactionFormSchema),
+  });
+
+  function handleCreateNewTransaction(data: NewTransactionFormInputs) {
+    console.log(
+      "🚀 ~ file: NewTransactionModal.tsx:30 ~ NewTransactionModal ~ data:",
+      data
+    );
+  }
+
   return (
     <Dialog.Portal>
       <Overlay />
@@ -18,10 +45,25 @@ export const NewTransactionModal = () => {
           <X size={24} />
         </ModalCloseButton>
         <Dialog.Title>New Transaction</Dialog.Title>
-        <form action="">
-          <input type="text" placeholder="Description" required />
-          <input type="number" placeholder="Price" required />
-          <input type="text" placeholder="Category" required />
+        <form onSubmit={handleSubmit(handleCreateNewTransaction)}>
+          <input
+            type="text"
+            placeholder="Description"
+            {...register("description")}
+            required
+          />
+          <input
+            type="number"
+            placeholder="Price"
+            {...register("price", { valueAsNumber: true })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Category"
+            {...register("category")}
+            required
+          />
 
           <TransactionType>
             <TransactionButton variant="income" value="income">
@@ -34,7 +76,9 @@ export const NewTransactionModal = () => {
             </TransactionButton>
           </TransactionType>
 
-          <button type="submit">Register</button>
+          <button type="submit" disabled={isSubmitting}>
+            Register
+          </button>
         </form>
       </Content>
     </Dialog.Portal>
