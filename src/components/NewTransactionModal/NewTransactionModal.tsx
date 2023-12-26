@@ -1,7 +1,8 @@
-import { ArrowCircleUp, X } from "@phosphor-icons/react";
-import { ArrowCircleDown } from "@phosphor-icons/react/dist/ssr";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowCircleDown, ArrowCircleUp, X } from "@phosphor-icons/react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import * as z from "zod";
 import {
   Content,
   ModalCloseButton,
@@ -9,14 +10,12 @@ import {
   TransactionButton,
   TransactionType,
 } from "./styles";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const newTransactionFormSchema = z.object({
   description: z.string(),
   price: z.number(),
   category: z.string(),
-  // type: z.enum(["income", "outcome"]),
+  type: z.enum(["income", "outcome"]),
 });
 
 type NewTransactionFormInputs = z.infer<typeof newTransactionFormSchema>;
@@ -24,18 +23,15 @@ type NewTransactionFormInputs = z.infer<typeof newTransactionFormSchema>;
 export const NewTransactionModal = () => {
   const {
     register,
+    control,
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<NewTransactionFormInputs>({
     resolver: zodResolver(newTransactionFormSchema),
+    defaultValues: { type: "income" },
   });
 
-  function handleCreateNewTransaction(data: NewTransactionFormInputs) {
-    console.log(
-      "🚀 ~ file: NewTransactionModal.tsx:30 ~ NewTransactionModal ~ data:",
-      data
-    );
-  }
+  function handleCreateNewTransaction(data: NewTransactionFormInputs) {}
 
   return (
     <Dialog.Portal>
@@ -65,16 +61,27 @@ export const NewTransactionModal = () => {
             required
           />
 
-          <TransactionType>
-            <TransactionButton variant="income" value="income">
-              <ArrowCircleDown size={24} />
-              <span>Income</span>
-            </TransactionButton>
-            <TransactionButton variant="outcome" value="outcome">
-              <ArrowCircleUp size={24} />
-              <span>Outcome</span>
-            </TransactionButton>
-          </TransactionType>
+          <Controller
+            control={control}
+            name="type"
+            render={(props) => {
+              return (
+                <TransactionType
+                  onValueChange={props.field.onChange}
+                  value={props.field.value}
+                >
+                  <TransactionButton variant="income" value="income">
+                    <ArrowCircleDown size={24} />
+                    <span>Income</span>
+                  </TransactionButton>
+                  <TransactionButton variant="outcome" value="outcome">
+                    <ArrowCircleUp size={24} />
+                    <span>Outcome</span>
+                  </TransactionButton>
+                </TransactionType>
+              );
+            }}
+          />
 
           <button type="submit" disabled={isSubmitting}>
             Register
