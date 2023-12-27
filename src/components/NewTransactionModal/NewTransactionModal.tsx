@@ -1,15 +1,10 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowCircleDown, ArrowCircleUp, X } from "@phosphor-icons/react";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {ArrowCircleDown, ArrowCircleUp, X} from "@phosphor-icons/react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Controller, useForm } from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import * as z from "zod";
-import {
-  Content,
-  ModalCloseButton,
-  Overlay,
-  TransactionButton,
-  TransactionType,
-} from "./styles";
+import {Content, ModalCloseButton, Overlay, TransactionButton, TransactionType,} from "./styles";
+import {useTransactions} from "../../hooks/useTransactions.ts";
 
 const newTransactionFormSchema = z.object({
   description: z.string(),
@@ -25,20 +20,32 @@ export const NewTransactionModal = () => {
     register,
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: {isSubmitting},
+    reset,
   } = useForm<NewTransactionFormInputs>({
     resolver: zodResolver(newTransactionFormSchema),
-    defaultValues: { type: "income" },
+    defaultValues: {type: "income"},
   });
 
-  function handleCreateNewTransaction(data: NewTransactionFormInputs) {}
+  const {createTransaction} = useTransactions();
+
+  async function handleCreateNewTransaction(data: NewTransactionFormInputs) {
+    const {description, price, category, type} = data;
+    await createTransaction({
+      description,
+      price,
+      category,
+      type
+    });
+    reset();
+  }
 
   return (
     <Dialog.Portal>
-      <Overlay />
+      <Overlay/>
       <Content>
         <ModalCloseButton>
-          <X size={24} />
+          <X size={24}/>
         </ModalCloseButton>
         <Dialog.Title>New Transaction</Dialog.Title>
         <form onSubmit={handleSubmit(handleCreateNewTransaction)}>
@@ -51,7 +58,7 @@ export const NewTransactionModal = () => {
           <input
             type="number"
             placeholder="Price"
-            {...register("price", { valueAsNumber: true })}
+            {...register("price", {valueAsNumber: true})}
             required
           />
           <input
@@ -71,11 +78,11 @@ export const NewTransactionModal = () => {
                   value={props.field.value}
                 >
                   <TransactionButton variant="income" value="income">
-                    <ArrowCircleDown size={24} />
+                    <ArrowCircleDown size={24}/>
                     <span>Income</span>
                   </TransactionButton>
                   <TransactionButton variant="outcome" value="outcome">
-                    <ArrowCircleUp size={24} />
+                    <ArrowCircleUp size={24}/>
                     <span>Outcome</span>
                   </TransactionButton>
                 </TransactionType>

@@ -23,6 +23,30 @@
       "category": "Education",
       "price": 1660,
       "createdAt": "2023-12-21T19:50:42.788Z"
+    },
+    {
+      "description": "App Development",
+      "price": 10000,
+      "category": "Sales",
+      "type": "income",
+      "createdAt": "2023-12-27T19:14:41.986Z",
+      "id": 4
+    },
+    {
+      "description": "Panda Express",
+      "price": 10,
+      "category": "Food",
+      "type": "outcome",
+      "createdAt": "2023-12-27T19:26:17.479Z",
+      "id": 5
+    },
+    {
+      "description": "Pizza Hut",
+      "price": 12,
+      "category": "Food",
+      "type": "outcome",
+      "createdAt": "2023-12-27T20:43:40.031Z",
+      "id": 6
     }
   ]
 }
